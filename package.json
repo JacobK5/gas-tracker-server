@@ -4,7 +4,6 @@
   "description": "",
   "private": true,
   "scripts": {
-    "heroku-prebuild": "npm install --dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack -w --config ./config/webpack.dev.js",
     "build": "webpack --mode production --config ./config/webpack.prod.js"
@@ -20,9 +19,7 @@
     "express": "^4.17.2",
     "mongodb": "^4.3.1",
     "mongoose": "^6.1.8",
-    "mongoose-fill": "^1.7.0"
-  },
-  "devDependencies": {
+    "mongoose-fill": "^1.7.0",
     "@babel/core": "^7.16.12",
     "@babel/node": "^7.16.8",
     "@babel/preset-env": "^7.16.11",
