@@ -1,4 +1,5 @@
 import PointService from "./point";
+import axios from "axios";
 
 class TrackerService {
   runTracker = () => {
@@ -58,15 +59,14 @@ class TrackerService {
     console.log("starting to save hours");
     setInterval(() => {
       const now = new Date().getTime();
-      const earliest = now - 1800000; //half hour
-      const latest = now + 1800000;
-      const points = PointService.getMin(earliest, latest);
+      const earliest = now - 3600000; //hour
+      const points = PointService.getMin(earliest, now);
       let averagePrice;
       for (const point of points) {
         averagePrice += point.gasPrice;
       }
       averagePrice /= points.length;
-      PointService.add(averagePrice, now, "hour");
+      PointService.add(averagePrice, now - 1800000, "hour"); //save it as middle of the hour
     }, 3600000);
   };
 
@@ -81,7 +81,7 @@ class TrackerService {
         averagePrice += point.gasPrice;
       }
       averagePrice /= points.length;
-      PointService.add(averagePrice, now, "day");
+      PointService.add(averagePrice, now - 43200000, "day"); //save it as being at noon
     }, 86400000);
   };
 }

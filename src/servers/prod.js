@@ -2,8 +2,6 @@ import app from "~/app";
 import cors from "cors";
 import compression from "compression";
 import mongoose from "mongoose-fill";
-import axios from "axios";
-import PointService from "../services/point";
 import TrackerService from "../services/tracker";
 
 const { PORT, MONGODB_USER, MONGODB_PASSWORD, MONGODB_CLUSTER, MONGODB_DB } =
