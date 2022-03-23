@@ -2,7 +2,7 @@ import PointService from "./point";
 import axios from "axios";
 
 class TrackerService {
-  runTracker = () => {
+  runTracker = async () => {
     let now = new Date();
     let timeTillHour =
       new Date(
@@ -33,56 +33,66 @@ class TrackerService {
     setTimeout(this.startDay, timeTillDay);
   };
 
+  trackMinutes = () => {
+    const { ETHERSCAN_API_KEY } = process.env;
+    axios
+      .get("https://api.etherscan.io/api", {
+        params: {
+          module: "gastracker",
+          action: "gasoracle",
+          apikey: ETHERSCAN_API_KEY,
+        },
+      })
+      .then((result) => {
+        return PointService.add(
+          result.data.result.ProposeGasPrice,
+          new Date().getTime(),
+          "min"
+        );
+      });
+  };
+
+  trackHours = async () => {
+    const now = new Date().getTime();
+    const earliest = now - 3600000; //hour
+    const points = await PointService.getMin(earliest, now);
+    let averagePrice = 0;
+    for (const point of points) {
+      averagePrice += point.gasPrice;
+    }
+    console.log("avg price before division:", averagePrice);
+    averagePrice /= points.length;
+    PointService.add(averagePrice, now - 1800000, "hour"); //save it as middle of the hour
+  };
+
+  trackDays = async () => {
+    const now = new Date().getTime();
+    const earliest = now - 86400000; //day
+    const points = await PointService.getHour(earliest, now);
+    let averagePrice = 0;
+    for (const point of points) {
+      averagePrice += point.gasPrice;
+    }
+    if (points.length != 0) averagePrice /= points.length;
+    PointService.add(averagePrice, now - 43200000, "day"); //save it as being at noon
+  };
+
   startMin = () => {
     console.log("starting to save minutes");
-    setInterval(() => {
-      const { ETHERSCAN_API_KEY } = process.env;
-      axios
-        .get("https://api.etherscan.io/api", {
-          params: {
-            module: "gastracker",
-            action: "gasoracle",
-            apikey: ETHERSCAN_API_KEY,
-          },
-        })
-        .then((result) => {
-          return PointService.add(
-            result.data.result.ProposeGasPrice,
-            new Date().getTime(),
-            "min"
-          );
-        });
-    }, 300000);
+    this.trackMinutes();
+    setInterval(this.trackMinutes, 300000);
   };
 
-  startHour = () => {
+  startHour = async () => {
     console.log("starting to save hours");
-    setInterval(() => {
-      const now = new Date().getTime();
-      const earliest = now - 3600000; //hour
-      const points = PointService.getMin(earliest, now);
-      let averagePrice;
-      for (const point of points) {
-        averagePrice += point.gasPrice;
-      }
-      averagePrice /= points.length;
-      PointService.add(averagePrice, now - 1800000, "hour"); //save it as middle of the hour
-    }, 3600000);
+    this.trackHours();
+    setInterval(this.trackHours, 3600000);
   };
 
-  startDay = () => {
+  startDay = async () => {
     console.log("starting to save days");
-    setInterval(() => {
-      const now = new Date().getTime();
-      const earliest = now - 86400000; //day
-      const points = PointService.getHour(earliest, now);
-      let averagePrice;
-      for (const point of points) {
-        averagePrice += point.gasPrice;
-      }
-      averagePrice /= points.length;
-      PointService.add(averagePrice, now - 43200000, "day"); //save it as being at noon
-    }, 86400000);
+    this.trackDays();
+    setInterval(this.trackDays, 86400000);
   };
 }
 
