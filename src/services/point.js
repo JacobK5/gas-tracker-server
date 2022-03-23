@@ -31,7 +31,7 @@ class PointService {
 
   add = (gasPrice, time, type) => {
     return new Point({ gasPrice, time, type }).save().then((pt) => {
-      console.log(pt);
+      console.log("saved", pt);
     });
   };
 }

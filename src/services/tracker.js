@@ -44,7 +44,7 @@ class TrackerService {
         },
       })
       .then((result) => {
-        return PointService.add(
+        PointService.add(
           result.data.result.ProposeGasPrice,
           new Date().getTime(),
           "min"
