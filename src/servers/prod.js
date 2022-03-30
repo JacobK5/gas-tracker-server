@@ -22,7 +22,7 @@ console.log(
 
 import routes from "~/routes";
 
-app.use(cors({ origin: ["https://dev.gas-tracker.ca", "*"] })); //allow everything for now
+app.use(cors({ origin: ["https://eth-gas-tracker.netlify.app", "*"] })); //allow everything for now
 app.use(compression());
 app.use(function (req, res, next) {
   //console.log(app.get('env'))
