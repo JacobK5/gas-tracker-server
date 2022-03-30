@@ -29,7 +29,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use(cors({ origin: ["https://dev.gas-tracker.ca", "*"] }));
+app.use(cors({ origin: ["https://eth-gas-tracker.netlify.app", "*"] }));
 app.use(compression());
 
 app.get("/", function (req, res, next) {
